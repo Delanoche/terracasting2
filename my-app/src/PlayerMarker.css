@@ -1,0 +1,17 @@
+.PlayerMarker {
+    width: 4px;
+    height: 4px;
+    left: 5px;
+    top: -13px;
+    position: relative;
+}
+
+img {
+}
+
+foreignObject {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    left: -10px;
+}

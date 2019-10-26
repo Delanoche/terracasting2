@@ -1,0 +1,23 @@
+.tile {
+    text-align: start;
+    color: #FFF;
+    transform-origin: -50px -50px;
+    margin: 0;
+}
+
+.placement-holder-parent {
+    display: flex;
+}
+
+.placement-holder {
+    position: relative;
+    height: 3px;
+    width: 3px;
+    margin-right: 1px;
+    margin-top: 3px;
+}
+
+.placement-icon {
+    position: absolute;
+    width: 3px;
+}
