@@ -8,6 +8,9 @@ import Oceanable from "./Oceanable";
 import Ocean from "./Ocean";
 import Placements from "./Placements";
 import mars from "./mars.png"
+import Card from './Card';
+import Cards from './Cards';
+import Deck from './Deck';
 
 class App extends React.Component {
 
@@ -45,9 +48,22 @@ class App extends React.Component {
       }
     }
 
+    let projectCards = Cards.getBaseGameProjectCards();
+    console.log('Project Cards');
+    console.log(projectCards);
+
+    let corporationCards = Cards.getBaseGameCorporationCards();
+    console.log('Corporation Cards');
+    console.log(corporationCards);
+
+    let deck = new Deck(projectCards);
+    deck.shuffle();
 
     this.state = {
-      hexes: hexes
+      hexes: hexes,
+      projectCards: projectCards,
+      corporationCards: corporationCards,
+      deck: deck
     }
   }
 
@@ -111,6 +127,9 @@ class App extends React.Component {
     );
     return (
         <div className="App grid-container">
+          <div className="general">
+
+          </div>
           <div className="board">
             <div className="mars-holder">
               <img src={mars} className="mars-image" alt="logo"/>
