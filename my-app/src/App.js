@@ -1,11 +1,7 @@
 import React from 'react';
-import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
-import City from './City.js';
+import {Hexagon, HexGrid, Layout, Pattern} from 'react-hexgrid';
 import './App.css';
-import PlayerMarker from "./PlayerMarker";
-import Greenery from "./Greenery";
 import Oceanable from "./Oceanable";
-import Ocean from "./Ocean";
 import Placements from "./Placements";
 import mars from "./mars.png"
 
@@ -16,6 +12,10 @@ class App extends React.Component {
 
     var oceansToPlace = 12;
     const oceanables = [];
+    var potentialOceans = [];
+    for (var i = 0; i < 61; i++) {
+      potentialOceans[i] = i;
+    }
     const hexes = [];
     for (var i = 0; i < 61; i++) {
       const hex = {
@@ -25,23 +25,29 @@ class App extends React.Component {
       };
       hexes.push(hex);
     }
+    console.log(JSON.stringify(hexes));
+    const hexesByPosition = {};
+    for (var i = 0; i < hexes.length; i++) {
+      const hex = hexes[i];
+      hexesByPosition[hex.positions.toString()] = hex;
+    }
 
     for (var i = 0; i < oceansToPlace; i++) {
       var num = this.getRandomInt(61);
-      if (!oceanables.includes(num)) {
-        hexes[num].oceanable = true;
-        oceanables.push(num);
-      } else {
-        while(oceanables.includes(num)) {
-          var newNum = this.getRandomInt(61);
-          if (!oceanables.includes(newNum)) {
-            hexes[newNum].oceanable = true;
-            oceanables.push(newNum);
-            break;
-          } else {
-            num = newNum;
-          }
+      var needsToFindSpot = true;
+      while(needsToFindSpot) {
+        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) && !oceanables.includes(num)) {
+          // console.log('found one at ' + num);
         }
+        // console.log('should reroll ' + this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) + ' includes? ' + oceanables.includes(num) + ' ' + num);
+        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) && !oceanables.includes(num)) {
+          console.log('pushed');
+          hexes[num].oceanable = true;
+          oceanables.push(num);
+          needsToFindSpot = false;
+          potentialOceans = potentialOceans.splice(num, 1);
+        }
+        num = this.getRandomInt(61);
       }
     }
 
@@ -51,16 +57,63 @@ class App extends React.Component {
     }
   }
 
+  getPotentialPotentialOcean(potentialOceans) {
+    return potentialOceans[this.getRandomInt(potentialOceans.length)];
+  }
+
   getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
   shouldReRollOcean(oceanables, hexes, proposed) {
+    // return false;
     if (oceanables.length < 4) {
       return false;
     }
 
-    // if (proposed)
+    const neighbors = this.getNeighbors(proposed, hexes);
+    var hasOceanableNeighbor = false;
+    for(var i = 0; i < neighbors.length; i++) {
+      const neighbor = neighbors[i];
+      if (neighbor.oceanable) {
+        hasOceanableNeighbor = true;
+      }
+    }
+    // if (hasOceanableNeighbor) {
+    //   console.log('found one at ' + proposed.toString());
+    // }
+    return !hasOceanableNeighbor;
+  }
+
+  getNeighbors(positions, hexesByPosition) {
+    const northWest = positions.slice(0);
+    northWest[1] -= 1;
+    northWest[2] += 1;
+
+    const northEast = positions.slice(0);
+    northEast[0] += 1;
+    northEast[1] -= 1;
+
+    const east = positions.slice(0);
+    east[0] += 1;
+    east[2] -= 1;
+
+    const southEast = positions.slice(0);
+    southEast[1] += 1;
+    southEast[2] -= 1;
+
+    const southWest = positions.slice(0);
+    southWest[0] -= 1;
+    southWest[1] += 1;
+
+    const west = positions.slice(0);
+    west[0] -= 1;
+    west[2] += 1;
+
+    console.log(JSON.stringify(positions));
+    console.log(JSON.stringify([northWest, northEast, east, southEast, southWest, west]));
+
+    return [northWest, northEast, east, southEast, southWest, west].map((position) => position.toString()).map((position) => hexesByPosition[position]).filter(x => !!x);
   }
 
   randomPlacement() {
@@ -84,21 +137,21 @@ class App extends React.Component {
     if (n < 5) {
       return [0 + n, -4, 4 - n];
     } else if (n < 11) {
-      return [-1 + n - 5, -3, 4 - n - 5]
+      return [-1 + n - 5, -3, (5 + 4) - n]
     } else if (n < 18) {
-      return [-2 + n - 11, -2, 4 - n - 11];
+      return [-2 + n - 11, -2, (4 + 11) - n];
     } else if (n < 26) {
-      return [-3 + n - 18, -1, 4 - n - 18];
+      return [-3 + n - 18, -1, (4 + 18) - n];
     } else if (n < 35) {
-      return [-4 + n - 26, 0, 4 - n - 26];
+      return [-4 + n - 26, 0, (4 - 26) - n];
     } else if (n < 43) {
-      return [-4 + n - 35, 1, 3 - n - 35];
+      return [-4 + n - 35, 1, (4 + 35) -n];
     } else if (n < 50) {
-      return [-4 + n - 43, 2, 2 - n - 43];
+      return [-4 + n - 43, 2, (4 - 43) - n];
     } else if (n < 56) {
-      return [-4 + n - 50, 3, 1 - n - 50];
+      return [-4 + n - 50, 3, (4 + 50) - n];
     } else {
-      return [-4 + n - 56, 4, 0 - n - 56];
+      return [-4 + n - 56, 4, (4 + 56) - n];
     }
   }
 
