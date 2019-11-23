@@ -3,6 +3,7 @@ import plant from './plant.png';
 import titanium from './titanium.png';
 import steel from './steel.png';
 import card from './card.png';
+import heat from './heat.png';
 import './Placements.css';
 import PlayerMarker from './PlayerMarker.js'
 
@@ -25,6 +26,8 @@ class Placements extends React.Component {
       return steel;
     } else if (bonus === 'card') {
       return card;
+    } else if (bonus === 'heat') {
+      return heat;
     }
   }
 

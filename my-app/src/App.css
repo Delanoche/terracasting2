@@ -41,7 +41,10 @@
 
 .heat { grid-area: heat; }
 
-.players { grid-area: players; }
+.players {
+  grid-area: players;
+  display: flex;
+}
 
 .general { grid-area: general; }
 
@@ -53,7 +56,7 @@ svg g polygon {
 
 svg g {
   fill: #FFF;
-  fill-opacity: 0.05;
+  fill-opacity: 0.10;
 }
 
 .tile {
@@ -75,12 +78,17 @@ svg g {
 }
 
 .board {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
   text-align: center;
+  height: 100%;
 }
 
 .mars-holder {
-  top: -30px;
-  position: relative;
+  grid-row-start: 1;
+  grid-column-start: 1;
+  height: 100%;
 }
 
 .mars-image {
@@ -89,11 +97,18 @@ svg g {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  position: absolute;
     z-index: 1;
+  height: 100%;
+  width: auto;
 }
 
 .hex-board {
-  position: relative;
+  grid-row-start: 1;
+  grid-column-start: 1;
   z-index: 2;
+  height: 100%;
+}
+
+.grid {
+  height: 100%;
 }

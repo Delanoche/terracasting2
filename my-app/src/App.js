@@ -3,10 +3,14 @@ import {Hexagon, HexGrid, Layout, Pattern} from 'react-hexgrid';
 import './App.css';
 import Oceanable from "./Oceanable";
 import Placements from "./Placements";
+import PlacementBonuses from "./PlacementBonuses";
 import mars from "./mars.png"
 import Card from './Card';
 import Cards from './Cards';
 import Deck from './Deck';
+import Thermometer from "./Thermometer";
+import Oxygometer from "./Oxygometer";
+import Player from './Player.js'
 
 class App extends React.Component {
 
@@ -16,6 +20,7 @@ class App extends React.Component {
     var oceansToPlace = 12;
     const oceanables = [];
     var potentialOceans = [];
+    this.numOceanPlots = this.getRandomInt(4) + 2; // 2 to 5
     for (var i = 0; i < 61; i++) {
       potentialOceans[i] = i;
     }
@@ -23,12 +28,11 @@ class App extends React.Component {
     for (var i = 0; i < 61; i++) {
       const hex = {
         positions: this.nToCoords(i),
-        placement: this.randomPlacement(),
+        placement: [],
         oceanable: false,
       };
       hexes.push(hex);
     }
-    console.log(JSON.stringify(hexes));
     const hexesByPosition = {};
     for (var i = 0; i < hexes.length; i++) {
       const hex = hexes[i];
@@ -44,7 +48,6 @@ class App extends React.Component {
         }
         // console.log('should reroll ' + this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) + ' includes? ' + oceanables.includes(num) + ' ' + num);
         if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) && !oceanables.includes(num)) {
-          console.log('pushed');
           hexes[num].oceanable = true;
           oceanables.push(num);
           needsToFindSpot = false;
@@ -62,10 +65,25 @@ class App extends React.Component {
     console.log('Corporation Cards');
     console.log(corporationCards);
 
-    let deck = new Deck(projectCards);
+    let deck = new Deck({ cards: projectCards });
     deck.shuffle();
+    const bonuses = new PlacementBonuses(hexes, hexesByPosition);
+
+    let players = [];
+    for (var i = 0; i < 4; i++) {
+      var player = { id: i, initialCards: [], initialCorps: [], currentCards: [], currentCorp: [], dongs: 0, dongduction: 0, steel: 0, steelProduction: 0, titanium: 0, titaniumProduction: 0, plants: 0, plantProduction: 0, energy: 0, energyProduction: 0, heat: 0, heatProduction: 0};
+      for (var cards = 0; cards < 10; cards++) {
+        player.initialCards.push(deck.cards.pop());
+      }
+      player.initialCorps.push(corporationCards.pop());
+      player.initialCorps.push(corporationCards.pop());
+      players.push(player);
+    }
+
+    console.log(players);
 
     this.state = {
+      players: players,
       hexes: hexes,
       projectCards: projectCards,
       corporationCards: corporationCards,
@@ -83,10 +101,11 @@ class App extends React.Component {
 
   shouldReRollOcean(oceanables, hexes, proposed) {
     // return false;
-    if (oceanables.length < 4) {
+    if (oceanables.length < this.numOceanPlots) {
       return false;
     }
 
+    var wouldHaveTooManyOceans = false;
     const neighbors = this.getNeighbors(proposed, hexes);
     var hasOceanableNeighbor = false;
     for(var i = 0; i < neighbors.length; i++) {
@@ -94,11 +113,24 @@ class App extends React.Component {
       if (neighbor.oceanable) {
         hasOceanableNeighbor = true;
       }
+
+      if (!neighbor.oceanable) {
+        var neighborsNeighbors = this.getNeighbors(neighbor.positions, hexes);
+        var numOceans = 0;
+        for (var j = 0; j < neighborsNeighbors.length; j++) {
+          if (neighborsNeighbors[j].oceanable) {
+            numOceans++;
+          }
+        }
+        if (numOceans + 1 > 3) {
+          wouldHaveTooManyOceans = true;
+        }
+      }
     }
     // if (hasOceanableNeighbor) {
     //   console.log('found one at ' + proposed.toString());
     // }
-    return !hasOceanableNeighbor;
+    return !hasOceanableNeighbor || wouldHaveTooManyOceans;
   }
 
   getNeighbors(positions, hexesByPosition) {
@@ -126,27 +158,7 @@ class App extends React.Component {
     west[0] -= 1;
     west[2] += 1;
 
-    console.log(JSON.stringify(positions));
-    console.log(JSON.stringify([northWest, northEast, east, southEast, southWest, west]));
-
     return [northWest, northEast, east, southEast, southWest, west].map((position) => position.toString()).map((position) => hexesByPosition[position]).filter(x => !!x);
-  }
-
-  randomPlacement() {
-    const placements = [];
-    if (this.getRandomInt(4) === 3) {
-      placements.push('plant');
-    }
-    if (this.getRandomInt(4) === 3) {
-      placements.push('titanium')
-    }
-    if (this.getRandomInt(4) === 3) {
-      placements.push('card')
-    }
-    if (this.getRandomInt(4) === 3) {
-      placements.push('steel')
-    }
-    return placements;
   }
 
   nToCoords(n) {
@@ -159,15 +171,15 @@ class App extends React.Component {
     } else if (n < 26) {
       return [-3 + n - 18, -1, (4 + 18) - n];
     } else if (n < 35) {
-      return [-4 + n - 26, 0, (4 - 26) - n];
+      return [-4 + n - 26, 0, (4 + 26) - n];
     } else if (n < 43) {
-      return [-4 + n - 35, 1, (4 + 35) -n];
+      return [-4 + n - 35, 1, (3 + 35) - n];
     } else if (n < 50) {
-      return [-4 + n - 43, 2, (4 - 43) - n];
+      return [-4 + n - 43, 2, (2 + 43) - n];
     } else if (n < 56) {
-      return [-4 + n - 50, 3, (4 + 50) - n];
+      return [-4 + n - 50, 3, (1 + 50) - n];
     } else {
-      return [-4 + n - 56, 4, (4 + 56) - n];
+      return [-4 + n - 56, 4, (56) - n];
     }
   }
 
@@ -177,6 +189,10 @@ class App extends React.Component {
         { hex.oceanable ? <Oceanable/> : null }
         <Placements bonuses={hex.placement}/>
       </Hexagon>
+    );
+
+    const players = this.state.players.map((player) =>
+        <Player player={player} />
     );
     return (
         <div className="App grid-container">
@@ -285,6 +301,15 @@ class App extends React.Component {
                 <Pattern id="pat-2" link="http://cat-picture2"/>
               </HexGrid>
             </div>
+          </div>
+          <div className="heat">
+            <Thermometer />
+          </div>
+          <div className="o2_tracker">
+            <Oxygometer />
+          </div>
+          <div className="players">
+            {players}
           </div>
         </div>
     );
