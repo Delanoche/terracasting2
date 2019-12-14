@@ -48,6 +48,10 @@
 
 .general { grid-area: general; }
 
+.hex-board .grid {
+  height: 100%;
+}
+
 svg g polygon {
   stroke: #000;
   stroke-width: 0.2;
@@ -57,6 +61,10 @@ svg g polygon {
 svg g {
   fill: #FFF;
   fill-opacity: 0.10;
+}
+
+svg g text {
+  fill-opacity: 1;
 }
 
 .tile {
@@ -109,6 +117,51 @@ svg g {
   height: 100%;
 }
 
-.grid {
-  height: 100%;
+.moons {
+  z-index: 2;
+  position: absolute;
 }
+
+.moon-holder {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
+  text-align: center;
+  height: auto;
+}
+
+.moon {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+.ganymede {
+  grid-row-start: 1;
+  grid-column-start: 1;
+  z-index: 2;
+}
+
+.phobos {
+  grid-row-start: 1;
+  grid-column-start: 1;
+  z-index: 2;
+}
+
+.moon-image {
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  z-index: 1;
+  height: 100px;
+  width: auto;
+}
+
+foreignObject {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  left: -10px;
+}
+

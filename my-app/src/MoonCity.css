@@ -1,0 +1,24 @@
+.City {
+}
+
+img {
+}
+
+.city-object {
+    width: 80px;
+    height: 87px;
+    position: relative;
+    left: -20px;
+    transform-origin: 0px 0px;
+}
+
+
+.City-tile {
+    text-align: start;
+    color: #FFF;
+    margin: 0;
+}
+
+.city-icon {
+    width: 100%;
+}

@@ -1,16 +1,21 @@
 import React from 'react';
-import {Hexagon, HexGrid, Layout, Pattern} from 'react-hexgrid';
+import {Hexagon, HexGrid, Layout, Pattern, Text} from 'react-hexgrid';
 import './App.css';
 import Oceanable from "./Oceanable";
 import Placements from "./Placements";
 import PlacementBonuses from "./PlacementBonuses";
 import mars from "./mars.png"
+import phobos from "./phobos.png"
 import Card from './Card';
 import Cards from './Cards';
 import Deck from './Deck';
 import Thermometer from "./Thermometer";
 import Oxygometer from "./Oxygometer";
 import Player from './Player.js'
+import City from './City.js'
+import MoonCity from './MoonCity.js'
+import Greenery from './Greenery.js'
+import PlayerMarker from "./PlayerMarker";
 
 class App extends React.Component {
 
@@ -300,6 +305,38 @@ class App extends React.Component {
                 <Pattern id="pat-1" link="http://cat-picture"/>
                 <Pattern id="pat-2" link="http://cat-picture2"/>
               </HexGrid>
+            </div>
+            <div className="moons">
+              <div className="moon-holder">
+                <div className="moon">
+                  <img src={phobos} className="moon-image" alt="logo"/>
+                </div>
+                <div className="phobos">
+                  <HexGrid width={100} height={100}>
+                    <Layout size={{x: 43.4, y: 43.4}} flat={false} spacing={0.0} origin={{x: 0, y: 0}}>
+                      <Hexagon q={0} r={0} s={0}>
+                        <Text>Phobos</Text>
+                      </Hexagon>
+                    </Layout>
+                  </HexGrid>
+                </div>
+              </div>
+              <div className="moon-holder">
+                <div className="moon">
+                  <img src={phobos} className="moon-image" alt="logo"/>
+                </div>
+                <div className="ganymede">
+                  <HexGrid width={100} height={100}>
+                    <Layout size={{x: 43.4, y: 43.4}} flat={false} spacing={0.0} origin={{x: 0, y: 0}}>
+                      <Hexagon q={0} r={0} s={0}>
+                        <Text>Ganymede</Text>
+                        {/*<Greenery/>*/}
+                        {/*<MoonCity player={'red'}/>*/}
+                      </Hexagon>
+                    </Layout>
+                  </HexGrid>
+                </div>
+              </div>
             </div>
           </div>
           <div className="heat">
