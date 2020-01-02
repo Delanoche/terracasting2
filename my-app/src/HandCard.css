@@ -1,0 +1,80 @@
+.grid-container {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 0.4fr 0.4fr 2.2fr 1fr;
+    grid-template-areas: "cost tags tags tags" "name name name name" "effects effects effects effects" "vp_description vp_description vp_description vp";
+}
+
+.cost {
+    grid-area: cost;
+    background: yellow;
+    color: black;
+}
+
+.tags {
+    grid-area: tags;
+    display: flex;
+}
+
+.name {
+    grid-area: name;
+    background: #DDD;
+    color: black;
+}
+
+.effects { grid-area: effects; }
+
+.vp { grid-area: vp; }
+
+.vp_description { grid-area: vp_description; }
+
+.card {
+    height: 350px;
+    width: 275px;
+    border-radius: 5px;
+    border-color: black;
+    border-width: 5px;
+    border-style: solid;
+    /*padding: 8px;*/
+    margin: 8px;
+    background: #DDD;
+}
+
+.hand-card-tag {
+    height: 100%;
+}
+
+.hand-card-tag-holder {
+    height: 25px;
+}
+
+.box-holder {
+    display: inline-block;
+}
+
+.production-holder {
+    height: 25px;
+    flex: 0 1 auto;
+}
+
+.production-box {
+    background: saddlebrown;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.production {
+    height: 100%;
+}
+
+.credit-production {
+    height: 25px;
+    width: 25px;
+    background: yellow;
+    color: black;
+}

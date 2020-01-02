@@ -19,8 +19,8 @@ import PlayerMarker from "./PlayerMarker";
 
 class BoardView extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     var oceansToPlace = 12;
     const oceanables = [];
@@ -61,38 +61,11 @@ class BoardView extends React.Component {
         num = this.getRandomInt(61);
       }
     }
-
-    let projectCards = Cards.getBaseGameProjectCards();
-    console.log('Project Cards');
-    console.log(projectCards);
-
-    let corporationCards = Cards.getBaseGameCorporationCards();
-    console.log('Corporation Cards');
-    console.log(corporationCards);
-
-    let deck = new Deck({ cards: projectCards });
-    deck.shuffle();
     const bonuses = new PlacementBonuses(hexes, hexesByPosition);
 
-    let players = [];
-    for (var i = 0; i < 4; i++) {
-      var player = { id: i, initialCards: [], initialCorps: [], currentCards: [], currentCorp: [], dongs: 0, dongduction: 0, steel: 0, steelProduction: 0, titanium: 0, titaniumProduction: 0, plants: 0, plantProduction: 0, energy: 0, energyProduction: 0, heat: 0, heatProduction: 0};
-      for (var cards = 0; cards < 10; cards++) {
-        player.initialCards.push(deck.cards.pop());
-      }
-      player.initialCorps.push(corporationCards.pop());
-      player.initialCorps.push(corporationCards.pop());
-      players.push(player);
-    }
-
-    console.log(players);
-
     this.state = {
-      players: players,
       hexes: hexes,
-      projectCards: projectCards,
-      corporationCards: corporationCards,
-      deck: deck
+      players: props.players
     }
   }
 
