@@ -15,7 +15,7 @@ class Temperature extends React.Component {
 
   render() {
     return (
-        <div>
+        <div className="temp-holder">
           {this.state.temp}
         </div>
     );
