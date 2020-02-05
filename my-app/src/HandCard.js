@@ -48,7 +48,7 @@ class HandCard extends React.Component {
     // const image = eval("im" + Math.floor(Math.random() * Math.floor(22)));
     return (
         <div className="card">
-          <div className="grid-container">
+          <div className="hand-grid">
             <div className="cost">{this.state.card.cost}</div>
             <div className="tags"><div className="hand-card-req">{this.state.card.req}</div>{tags}</div>
             <div className={cardClass}>{this.state.card.name}</div>
