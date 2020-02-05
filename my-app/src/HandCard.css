@@ -3,8 +3,8 @@
     width: 100%;
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
-    grid-template-rows: 0.4fr 0.4fr 2.2fr 1fr;
-    grid-template-areas: "cost tags tags tags" "name name name name" "effects effects effects effects" "vp_description vp_description vp_description vp";
+    grid-template-rows: 0.4fr 0.4fr 2.2fr;
+    grid-template-areas: "cost tags tags tags" "name name name name" "effects effects effects effects";
 }
 
 .cost {
@@ -16,19 +16,70 @@
 .tags {
     grid-area: tags;
     display: flex;
+    justify-content: flex-end;
 }
 
 .name {
     grid-area: name;
-    background: #DDD;
+    text-align: center;
     color: black;
+    text-transform: uppercase;
 }
 
-.effects { grid-area: effects; }
+.event {
+    background: orangered;
+}
 
-.vp { grid-area: vp; }
+.automated {
+    background: green;
+}
 
-.vp_description { grid-area: vp_description; }
+.active {
+    background: blue;
+}
+
+.effects {
+    grid-area: effects;
+    display: flex;
+    flex-direction: column;
+}
+
+.actual-effects {
+    flex-shrink: 1;
+    padding: 10px;
+}
+
+.art {
+    background: black;
+    flex-grow: 1;
+    overflow: hidden;
+    flex-basis: 0;
+}
+
+.art-image {
+    flex-basis: auto;
+    min-width: 100%;
+    min-height: 100%;
+    width:100%;
+    height:100%;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.vp_holder {
+    display: flex;
+    flex-shrink: 1;
+}
+
+.vp {
+    grid-area: vp;
+    flex-shrink: 1;
+}
+
+.vp_description {
+    flex-grow: 1;
+    grid-area: vp_description;
+}
 
 .card {
     height: 350px;
@@ -42,11 +93,20 @@
     background: #DDD;
 }
 
+.hand-card-req {
+    margin-right: auto;
+}
+
 .hand-card-tag {
     height: 100%;
+    border-radius: 100px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
 }
 
 .hand-card-tag-holder {
+    justify-content: flex-end;
     height: 25px;
 }
 
