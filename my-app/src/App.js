@@ -175,6 +175,9 @@ class App extends React.Component {
         positions: this.nToCoords(i),
         placement: [],
         oceanable: false,
+        city: '',
+        greenery: '',
+        marker: ''
       };
       hexes.push(hex);
     }

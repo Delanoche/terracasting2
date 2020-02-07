@@ -35,10 +35,29 @@ class BoardView extends React.Component {
     })
   }
 
+  placeCity(hex) {
+    if (hex.city.length > 0) {
+      hex.greenery = 'red';
+      hex.city = '';
+    } else if (hex.greenery.length > 0) {
+      hex.greenery = '';
+      hex.city = '';
+    } else {
+      hex.city = "red";
+      hex.greenery = '';
+    }
+    this.setState({
+      hexes: this.state.hexes
+    });
+  }
+
   render () {
     const hexBoard = this.state.hexes.map((hex) =>
-        <Hexagon className={hex.oceanable ? "ocean" : ""} q={hex.positions[0]} r={hex.positions[1]} s={hex.positions[2]}>
+        <Hexagon className={hex.oceanable ? "ocean" : ""} q={hex.positions[0]} r={hex.positions[1]} s={hex.positions[2]} onClick={() => this.placeCity(hex)}>
           <Placements bonuses={hex.placement}/>
+          { hex.city.length > 0 ? <City player={hex.city} /> : null }
+          { hex.greenery.length > 0 ? <Greenery player={hex.greenery} /> : null }
+
         </Hexagon>
     );
 

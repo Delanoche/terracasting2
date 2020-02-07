@@ -21,3 +21,8 @@
 .App-link {
   color: #09d3ac;
 }
+
+::selection {
+    color: none;
+    background: none;
+}
