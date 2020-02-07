@@ -17,6 +17,12 @@ class Placements extends React.Component {
     };
   }
 
+  componentWillReceiveProps(newProps){
+    this.setState({
+      bonuses: newProps.bonuses
+    })
+  }
+
   getImage(bonus) {
     if (bonus === 'plant') {
       return plant;
