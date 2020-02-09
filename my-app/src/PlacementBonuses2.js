@@ -1,4 +1,4 @@
-class PlacementBonuses {
+class PlacementBonuses2 {
 
   constructor(tiles,
               hexesByPosition,
@@ -238,6 +238,54 @@ class PlacementBonuses {
   splitNums(numPlots, num, numTiles) {
   }
 
+  findContiguousPlot(allowOverlaps, bonusType, numTiles, num) {
+    for (var i = 0; i < 61; i++) {
+      var hexes = this.isPlaceable(this.tiles[i], bonusType, num, numTiles, {});
+      if (Object.keys(hexes).length > 0) {
+        console.log(hexes);
+        Object.keys(hexes).forEach((key) => {
+          for (var j = 0; j < hexes[key]; j++) {
+            this.tiles[key].placement.push(bonusType);
+          }
+        });
+      }
+    }
+  }
+
+  isPlaceable(hex, bonusType, num, numTiles, hexesToPlace) {
+    const neighbors = this.getNeighbors(hex, this.hexesByPosition, bonusType);
+    const realCandidates = neighbors.filter((neighbor) => neighbor.placement.length === 0);
+    const bonusNeighbors = neighbors.filter((neighbor) => neighbor.placement.indexOf(bonusType) >= 0);
+    if (hex.placement.length === 0 && bonusNeighbors.length < 1 && !hexesToPlace[hex.index]) {
+      const toPlace = this.howManyToPlace(num, numTiles);
+      if (num - toPlace === 0) {
+        hexesToPlace[hex.index] = toPlace;
+        return hexesToPlace;
+      } else if (realCandidates.length > 0) {
+        hexesToPlace[hex.index] = toPlace;
+        return this.isPlaceable(realCandidates[0], bonusType, num - toPlace, numTiles - 1, hexesToPlace);
+      } else {
+        return {};
+      }
+    } else {
+      return {};
+    }
+  }
+
+  howManyToPlace(num, numTiles) {
+    if (num === numTiles) {
+      return 1;
+    } else if (numTiles === 1) {
+      return 2;
+    } else {
+      if (Math.random() > 0.5) {
+        return 2;
+      } else {
+        return 1;
+      }
+    }
+  }
+
   sectionPlots(total, num, numTiles, bonusType) {
     const shouldReserveThreeBomb = (bonusType === this.threesBonusOne && this.numThrees > 0) || (bonusType === this.threesBonusTwo && this.numThrees > 1);
     if (total === 1) {
@@ -316,7 +364,9 @@ class PlacementBonuses {
   plotHeat(self) {
     const maxHeatPerTile = 2;
     if (self.numHeat > 0) {
-      self.plotBonus('heat', self.numHeat, self.numHeatTiles, self.heatPlots, maxHeatPerTile);
+      for (var i = 0; i < self.heatPlots; i++) {
+        // self.findContiguousPlot(false, 'heat', self.numHeatTiles, self.numHeat);
+      }
     }
   }
 
@@ -328,7 +378,10 @@ class PlacementBonuses {
     //   var startTile = this.tiles[startNum];
     //   this.placeBonus('steel', maxSteelPerTile, numSteel / this.steelPlots, numSteelTiles / this.steelPlots, {'currentTiles': 0, 'currentNum': 0}, startTile);
     // }
-    self.plotBonus('steel', self.numSteel, self.numSteelTiles, self.steelPlots, maxSteelPerTile);
+    self.sectionPlots(self.steelPlots, self.numSteel, self.numSteelTiles, 'steel').forEach(numOnPlot => {
+      console.log('placing steel ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
+      self.findContiguousPlot(false, 'steel', numOnPlot['num'], numOnPlot['tiles']);
+    });
   }
 
   plotTitanium(self) {
@@ -361,51 +414,51 @@ class PlacementBonuses {
 
   placeBonus(bonusType, maxPer, num, numTiles, numObj, tile) {
     // while (num > numObj['currentNum'] && numTiles > numObj['currentTiles']) {
-      var neighbors = this.getNeighbors(tile, this.hexesByPosition, bonusType);
-      neighbors.forEach(neighbor => {
-        if (num > numObj['currentNum'] && numTiles > numObj['currentTiles']) {
-          if (maxPer === 3) {
-            maxPer = 2;
-          }
-          // if (bonusType === 'heat') {
-          //   console.log('HEAT STUFF ' + num + ' ' + numTiles + ' ' + JSON.stringify(numObj) + ' ' + this.threeHeats);
-          // }
-          if (((this.numThrees > this.currentThrees &&
-              (bonusType === this.threesBonusOne && this.currentThrees === 0 ||
-              bonusType === this.threesBonusTwo && this.currentThrees === 1)) &&
-              (num - numObj['currentNum']) - (numTiles - numObj['currentTiles']) >= 3) ||
-              (bonusType === 'heat' && this.threeHeats === 0 && numTiles * 2 < num)) {
-            maxPer = 3;
-          }
-          if (num - numObj['currentNum'] <= numTiles - numObj['currentTiles'] || num - numObj['currentNum'] < 2 /*|| this.currentTwos >= this.numTwos*/) {
-            maxPer = 1;
-          }
-          if (neighbor.placement.indexOf(bonusType) < 0 && neighbor.placement.length < 2 && (maxPer < 3 ? maxPer + neighbor.placement.length < 3 : true) // this is so we don't have 3's of differing bonus types
-              && (neighbor.placement.length + maxPer <= ((this.currentThrees < this.numThrees || (maxPer === 3 && bonusType === 'heat')) ? 3 : 2))
-              && (neighbor.placement.length === 0 || (neighbor.placement.length > 0 && this.currentOverlaps < this.numOverlaps))) {
-            numObj['currentTiles'] += 1;
-            numObj['currentNum'] += maxPer;
-
-            if (neighbor.placement.length > 0) {
-              this.currentOverlaps++;
-            }
-            this.placeX(neighbor, maxPer, bonusType);
-            if (neighbor.placement.length === 3 && bonusType !== 'heat') {
-              this.currentThrees++;
-            } else if (neighbor.placement.length === 3 && bonusType === 'heat') {
-              this.threeHeats++;
-            }
-            if (neighbor.placement.length === 2) {
-              this.currentTwos++;
-            }
-            this.placeBonus(bonusType, maxPer, num, numTiles, numObj, neighbor);
-          } else {
-            this.placeBonus(bonusType, maxPer, num, numTiles, numObj, neighbor);
-          }
-        } else {
-          return;
+    var neighbors = this.getNeighbors(tile, this.hexesByPosition, bonusType);
+    neighbors.forEach(neighbor => {
+      if (num > numObj['currentNum'] && numTiles > numObj['currentTiles']) {
+        if (maxPer === 3) {
+          maxPer = 2;
         }
-      });
+        // if (bonusType === 'heat') {
+        //   console.log('HEAT STUFF ' + num + ' ' + numTiles + ' ' + JSON.stringify(numObj) + ' ' + this.threeHeats);
+        // }
+        if (((this.numThrees > this.currentThrees &&
+            (bonusType === this.threesBonusOne && this.currentThrees === 0 ||
+                bonusType === this.threesBonusTwo && this.currentThrees === 1)) &&
+            (num - numObj['currentNum']) - (numTiles - numObj['currentTiles']) >= 3) ||
+            (bonusType === 'heat' && this.threeHeats === 0 && numTiles * 2 < num)) {
+          maxPer = 3;
+        }
+        if (num - numObj['currentNum'] <= numTiles - numObj['currentTiles'] || num - numObj['currentNum'] < 2 /*|| this.currentTwos >= this.numTwos*/) {
+          maxPer = 1;
+        }
+        if (neighbor.placement.indexOf(bonusType) < 0 && neighbor.placement.length < 2 && (maxPer < 3 ? maxPer + neighbor.placement.length < 3 : true) // this is so we don't have 3's of differing bonus types
+            && (neighbor.placement.length + maxPer <= ((this.currentThrees < this.numThrees || (maxPer === 3 && bonusType === 'heat')) ? 3 : 2))
+            && (neighbor.placement.length === 0 || (neighbor.placement.length > 0 && this.currentOverlaps < this.numOverlaps))) {
+          numObj['currentTiles'] += 1;
+          numObj['currentNum'] += maxPer;
+
+          if (neighbor.placement.length > 0) {
+            this.currentOverlaps++;
+          }
+          this.placeX(neighbor, maxPer, bonusType);
+          if (neighbor.placement.length === 3 && bonusType !== 'heat') {
+            this.currentThrees++;
+          } else if (neighbor.placement.length === 3 && bonusType === 'heat') {
+            this.threeHeats++;
+          }
+          if (neighbor.placement.length === 2) {
+            this.currentTwos++;
+          }
+          this.placeBonus(bonusType, maxPer, num, numTiles, numObj, neighbor);
+        } else {
+          this.placeBonus(bonusType, maxPer, num, numTiles, numObj, neighbor);
+        }
+      } else {
+        return;
+      }
+    });
     // }
   }
 
@@ -420,4 +473,4 @@ class PlacementBonuses {
   }
 }
 
-export default PlacementBonuses;
+export default PlacementBonuses2;

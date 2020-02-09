@@ -3,6 +3,7 @@ import './App.css';
 import Deck from "./Deck.js"
 import HandView from "./HandView.js"
 import PlacementBonuses from './PlacementBonuses.js'
+import PlacementBonuses2 from './PlacementBonuses2.js'
 import BoardView from "./BoardView.js"
 import Cards from "./Cards";
 
@@ -172,6 +173,7 @@ class App extends React.Component {
     const hexes = [];
     for (var i = 0; i < 61; i++) {
       const hex = {
+        index: i,
         positions: this.nToCoords(i),
         placement: [],
         oceanable: false,
@@ -204,7 +206,7 @@ class App extends React.Component {
         num = this.getRandomInt(61);
       }
     }
-    const bonuses = new PlacementBonuses(hexes, hexesByPosition);
+    const bonuses = new PlacementBonuses2(hexes, hexesByPosition);
     return hexes;
   }
 
