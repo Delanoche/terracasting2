@@ -130,6 +130,28 @@ class PlacementBonuses2 {
     this.generate();
   }
 
+  nToCoords(n) {
+    if (n < 5) {
+      return [0 + n, -4, 4 - n];
+    } else if (n < 11) {
+      return [-1 + n - 5, -3, (5 + 4) - n]
+    } else if (n < 18) {
+      return [-2 + n - 11, -2, (4 + 11) - n];
+    } else if (n < 26) {
+      return [-3 + n - 18, -1, (4 + 18) - n];
+    } else if (n < 35) {
+      return [-4 + n - 26, 0, (4 + 26) - n];
+    } else if (n < 43) {
+      return [-4 + n - 35, 1, (3 + 35) - n];
+    } else if (n < 50) {
+      return [-4 + n - 43, 2, (2 + 43) - n];
+    } else if (n < 56) {
+      return [-4 + n - 50, 3, (1 + 50) - n];
+    } else {
+      return [-4 + n - 56, 4, (56) - n];
+    }
+  }
+
   getNeighbors(hex, hexesByPosition, bonusType) {
     const northWest = hex.positions.slice(0);
     northWest[1] -= 1;
@@ -238,16 +260,18 @@ class PlacementBonuses2 {
   splitNums(numPlots, num, numTiles) {
   }
 
-  findContiguousPlot(allowOverlaps, bonusType, numTiles, num) {
+  findContiguousPlot(allowOverlaps, bonusType, num, numTiles) {
     for (var i = 0; i < 61; i++) {
       var hexes = this.isPlaceable(this.tiles[i], bonusType, num, numTiles, {});
       if (Object.keys(hexes).length > 0) {
-        console.log(hexes);
+        console.log(JSON.stringify(hexes));
         Object.keys(hexes).forEach((key) => {
           for (var j = 0; j < hexes[key]; j++) {
+            this.hexesByPosition[this.nToCoords(this.tiles[key].index).toString()].placement.push(bonusType);
             this.tiles[key].placement.push(bonusType);
           }
         });
+        return;
       }
     }
   }
@@ -255,7 +279,8 @@ class PlacementBonuses2 {
   isPlaceable(hex, bonusType, num, numTiles, hexesToPlace) {
     const neighbors = this.getNeighbors(hex, this.hexesByPosition, bonusType);
     const realCandidates = neighbors.filter((neighbor) => neighbor.placement.length === 0);
-    const bonusNeighbors = neighbors.filter((neighbor) => neighbor.placement.indexOf(bonusType) >= 0);
+    const bonusNeighbors = neighbors.filter((neighbor) => neighbor.placement.includes(bonusType));
+    console.log(JSON.stringify(neighbors.map((neighbor) => neighbor.placement)) + ' ' +  bonusNeighbors.length);
     if (hex.placement.length === 0 && bonusNeighbors.length < 1 && !hexesToPlace[hex.index]) {
       const toPlace = this.howManyToPlace(num, numTiles);
       if (num - toPlace === 0) {
