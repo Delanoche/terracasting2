@@ -255,20 +255,24 @@ class PlacementBonuses2 {
     console.log('num steel ' + this.numSteel + ' on ' + this.numSteelTiles);
     console.log('num cards ' + this.numCards + ' on ' + this.numCardsTiles);
     console.log('num heat ' + this.numHeat + ' on ' + this.numHeatTiles);
+    var oceanTotal = this.tiles.map((tile) => tile.oceanable && tile.placement.length > 0 ? 1 : 0).reduce((x,y) => x+y);
+    var oceanNum = this.tiles.map((tile) => tile.oceanable ? tile.placement.length : 0).reduce((x,y) => x+y);
+    console.log('ocean stats ' + oceanNum + ' on ' + oceanTotal);
   }
 
   splitNums(numPlots, num, numTiles) {
   }
 
   findContiguousPlot(allowOverlaps, bonusType, num, numTiles) {
+    var start = this.getRandomInt(61);
     for (var i = 0; i < 61; i++) {
-      var hexes = this.isPlaceable(this.tiles[i], bonusType, num, numTiles, {});
+      var tile = (start + i) % 61;
+      var hexes = this.isPlaceable(this.tiles[tile], bonusType, num, numTiles, {});
       if (Object.keys(hexes).length > 0) {
-        console.log(JSON.stringify(hexes));
         Object.keys(hexes).forEach((key) => {
           for (var j = 0; j < hexes[key]; j++) {
             this.hexesByPosition[this.nToCoords(this.tiles[key].index).toString()].placement.push(bonusType);
-            this.tiles[key].placement.push(bonusType);
+            // this.tiles[key].placement.push(bonusType);
           }
         });
         return;
@@ -277,10 +281,12 @@ class PlacementBonuses2 {
   }
 
   isPlaceable(hex, bonusType, num, numTiles, hexesToPlace) {
-    const neighbors = this.getNeighbors(hex, this.hexesByPosition, bonusType);
+    const neighbors = this.getNeighbors(hex, this.hexesByPosition, '');
     const realCandidates = neighbors.filter((neighbor) => neighbor.placement.length === 0);
     const bonusNeighbors = neighbors.filter((neighbor) => neighbor.placement.includes(bonusType));
-    console.log(JSON.stringify(neighbors.map((neighbor) => neighbor.placement)) + ' ' +  bonusNeighbors.length);
+    // console.log(Object.keys(this.hexesByPosition).map((key) => this.hexesByPosition[key].placement.includes('steel')));
+    // console.log(neighbors);
+    // console.log(hex.index + ' ' + JSON.stringify(neighbors.map((neighbor) => neighbor.placement)) + ' ' +  bonusNeighbors.length);
     if (hex.placement.length === 0 && bonusNeighbors.length < 1 && !hexesToPlace[hex.index]) {
       const toPlace = this.howManyToPlace(num, numTiles);
       if (num - toPlace === 0) {
@@ -389,9 +395,11 @@ class PlacementBonuses2 {
   plotHeat(self) {
     const maxHeatPerTile = 2;
     if (self.numHeat > 0) {
-      for (var i = 0; i < self.heatPlots; i++) {
-        // self.findContiguousPlot(false, 'heat', self.numHeatTiles, self.numHeat);
-      }
+
+      self.sectionPlots(self.heatPlots, self.numHeat, self.numHeatTiles, 'heat').forEach(numOnPlot => {
+        console.log('placing heat ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
+        self.findContiguousPlot(false, 'heat', numOnPlot['num'], numOnPlot['tiles']);
+      });
     }
   }
 
@@ -412,13 +420,19 @@ class PlacementBonuses2 {
   plotTitanium(self) {
     const maxTitaniumPerTile = 2;
 
-    self.plotBonus('titanium', self.numTitanium, self.numTitaniumTiles, self.titaniumPlots, maxTitaniumPerTile);
+    self.sectionPlots(self.titaniumPlots, self.numTitanium, self.numTitaniumTiles, 'titanium').forEach(numOnPlot => {
+      console.log('placing titanium ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
+      self.findContiguousPlot(false, 'titanium', numOnPlot['num'], numOnPlot['tiles']);
+    });
   }
 
   plotCards(self) {
     const maxCardsPerTile = 2;
 
-    self.plotBonus('card', self.numCards, self.numCardsTiles, self.cardPlots, maxCardsPerTile);
+    self.sectionPlots(self.cardPlots, self.numCards, self.numCardsTiles, 'card').forEach(numOnPlot => {
+      console.log('placing cards ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
+      self.findContiguousPlot(false, 'card', numOnPlot['num'], numOnPlot['tiles']);
+    });
   }
 
   plotPlants() {
