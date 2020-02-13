@@ -263,7 +263,7 @@ class PlacementBonuses2 {
   splitNums(numPlots, num, numTiles) {
   }
 
-  findContiguousPlot(allowOverlaps, bonusType, num, numTiles) {
+  findContiguousPlot(bonusType, num, numTiles) {
     var start = this.getRandomInt(61);
     for (var i = 0; i < 61; i++) {
       var tile = (start + i) % 61;
@@ -282,17 +282,23 @@ class PlacementBonuses2 {
 
   isPlaceable(hex, bonusType, num, numTiles, hexesToPlace) {
     const neighbors = this.getNeighbors(hex, this.hexesByPosition, '');
-    const realCandidates = neighbors.filter((neighbor) => neighbor.placement.length === 0);
+    var realCandidates = neighbors.filter((neighbor) => neighbor.placement.length <= (this.currentOverlaps < this.numOverlaps ? 1 : 0));
     const bonusNeighbors = neighbors.filter((neighbor) => neighbor.placement.includes(bonusType));
     // console.log(Object.keys(this.hexesByPosition).map((key) => this.hexesByPosition[key].placement.includes('steel')));
     // console.log(neighbors);
     // console.log(hex.index + ' ' + JSON.stringify(neighbors.map((neighbor) => neighbor.placement)) + ' ' +  bonusNeighbors.length);
-    if (hex.placement.length === 0 && bonusNeighbors.length < 1 && !hexesToPlace[hex.index]) {
-      const toPlace = this.howManyToPlace(num, numTiles);
+    if ((hex.placement.length === 0 || (hex.placement.length === 1 && this.currentOverlaps < this.numOverlaps))  && bonusNeighbors.length < 1 && !hexesToPlace[hex.index]) {
+      // if (this.currentOverlaps >= this.numOverlaps) {
+      //   realCandidates = realCandidates.filter((neighbor) => neighbor.placement.length === 0);
+      // }
+      const toPlace = this.howManyToPlace(num, numTiles, this.currentOverlaps < this.numOverlaps);
       if (num - toPlace === 0) {
         hexesToPlace[hex.index] = toPlace;
         return hexesToPlace;
       } else if (realCandidates.length > 0) {
+        if (hex.placement.length > 0) {
+          this.currentOverlaps++;
+        }
         hexesToPlace[hex.index] = toPlace;
         return this.isPlaceable(realCandidates[0], bonusType, num - toPlace, numTiles - 1, hexesToPlace);
       } else {
@@ -303,8 +309,10 @@ class PlacementBonuses2 {
     }
   }
 
-  howManyToPlace(num, numTiles) {
-    if (num === numTiles) {
+  howManyToPlace(num, numTiles, overlap) {
+    if (overlap) {
+      return 1;
+    } else if (num === numTiles) {
       return 1;
     } else if (numTiles === 1) {
       return 2;
@@ -398,7 +406,7 @@ class PlacementBonuses2 {
 
       self.sectionPlots(self.heatPlots, self.numHeat, self.numHeatTiles, 'heat').forEach(numOnPlot => {
         console.log('placing heat ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
-        self.findContiguousPlot(false, 'heat', numOnPlot['num'], numOnPlot['tiles']);
+        self.findContiguousPlot('heat', numOnPlot['num'], numOnPlot['tiles']);
       });
     }
   }
@@ -413,7 +421,7 @@ class PlacementBonuses2 {
     // }
     self.sectionPlots(self.steelPlots, self.numSteel, self.numSteelTiles, 'steel').forEach(numOnPlot => {
       console.log('placing steel ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
-      self.findContiguousPlot(false, 'steel', numOnPlot['num'], numOnPlot['tiles']);
+      self.findContiguousPlot('steel', numOnPlot['num'], numOnPlot['tiles']);
     });
   }
 
@@ -422,7 +430,7 @@ class PlacementBonuses2 {
 
     self.sectionPlots(self.titaniumPlots, self.numTitanium, self.numTitaniumTiles, 'titanium').forEach(numOnPlot => {
       console.log('placing titanium ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
-      self.findContiguousPlot(false, 'titanium', numOnPlot['num'], numOnPlot['tiles']);
+      self.findContiguousPlot('titanium', numOnPlot['num'], numOnPlot['tiles']);
     });
   }
 
@@ -431,7 +439,7 @@ class PlacementBonuses2 {
 
     self.sectionPlots(self.cardPlots, self.numCards, self.numCardsTiles, 'card').forEach(numOnPlot => {
       console.log('placing cards ' + numOnPlot['num'] + ' ' + numOnPlot['tiles']);
-      self.findContiguousPlot(false, 'card', numOnPlot['num'], numOnPlot['tiles']);
+      self.findContiguousPlot('card', numOnPlot['num'], numOnPlot['tiles']);
     });
   }
 
