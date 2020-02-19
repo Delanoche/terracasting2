@@ -5,6 +5,7 @@
     grid-template-columns: 25% 25% 25% 25%;
     grid-template-rows: 0.4fr 0.4fr 2.2fr;
     grid-template-areas: "cost tags tags tags" "name name name name" "effects effects effects effects";
+    font-size: 10px;
 }
 
 .cost {
@@ -24,6 +25,7 @@
     text-align: center;
     color: black;
     text-transform: uppercase;
+    font-size: 14px;
 }
 
 .event {
@@ -82,8 +84,8 @@
 }
 
 .card {
-    height: 350px;
-    width: 275px;
+    height: 250px;
+    width: 175px;
     border-radius: 5px;
     border-color: black;
     border-width: 5px;
