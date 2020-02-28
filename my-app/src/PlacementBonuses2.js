@@ -89,6 +89,7 @@ class PlacementBonuses2 {
     const totalGreaterThanOne = this.getRandomInt(2) > 0 ? 19 : 20;
     this.numTwos = totalGreaterThanOne - (3 * this.numThrees);
     this.numOverlaps = this.getRandomInt(2) + 1;
+    console.log("overlaps: " + this.numOverlaps);
     // this.numOverlaps = 10;
     this.currentOverlaps = 0;
 
@@ -293,6 +294,9 @@ class PlacementBonuses2 {
       // }
       const toPlace = this.howManyToPlace(num, numTiles, this.currentOverlaps < this.numOverlaps);
       if (num - toPlace === 0) {
+        if (hex.placement.length > 0) {
+          this.currentOverlaps++;
+        }
         hexesToPlace[hex.index] = toPlace;
         return hexesToPlace;
       } else if (realCandidates.length > 0) {
