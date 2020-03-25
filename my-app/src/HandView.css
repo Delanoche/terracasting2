@@ -1,13 +1,11 @@
 .hand {
     display: flex;
     flex-wrap: wrap;
-    max-width: 100%;
 }
 
 .draft {
     display: flex;
     flex-wrap: wrap;
-    max-width: 75%;
 }
 
 .hand-view {

@@ -24,7 +24,9 @@ class BoardView extends React.Component {
 
     this.state = {
       hexes: props.hexes,
-      players: props.players
+      players: props.players,
+      phobos: props.phobos,
+      ganymede: props.ganymede
     }
   }
 
@@ -49,6 +51,14 @@ class BoardView extends React.Component {
     this.setState({
       hexes: this.state.hexes
     });
+  }
+  
+  placeCityPhobos() {
+      this.setState({phobos: 'red'})
+  }
+
+  placeCityGanymede() {
+      this.setState({ganymede: 'red'})
   }
 
   render () {
@@ -90,7 +100,8 @@ class BoardView extends React.Component {
                 <div className="phobos">
                   <HexGrid width={100} height={100}>
                     <Layout size={{x: 43.4, y: 43.4}} flat={false} spacing={0.0} origin={{x: 0, y: 0}}>
-                      <Hexagon q={0} r={0} s={0}>
+                      <Hexagon q={0} r={0} s={0} onClick={() => this.placeCityPhobos()}>
+                        { this.state.phobos.length > 0 ? <City player={this.state.phobos} /> : null }
                         <Text>Phobos</Text>
                       </Hexagon>
                     </Layout>

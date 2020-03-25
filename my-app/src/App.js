@@ -16,6 +16,8 @@ class App extends React.Component {
     projectCards = projectCards.map((card) => {
       card.req = Cards.getCardRequirement(card);
       card.tag_array = Cards.getCardTags(card);
+      const image = "" + Math.floor(Math.random() * Math.floor(22)) + ".jpg";
+      card.src = require('./' + image);
       return card;
     });
     console.log('Project Cards');
@@ -30,7 +32,27 @@ class App extends React.Component {
 
     let players = [];
     for (var i = 0; i < 4; i++) {
-      var player = { id: i, initialCards: [], initialCorps: [], currentCards: [], currentCorp: [], draftableCards: [], dongs: 0, dongduction: 0, steel: 0, steelProduction: 0, titanium: 0, titaniumProduction: 0, plants: 0, plantProduction: 0, energy: 0, energyProduction: 0, heat: 0, heatProduction: 0};
+      var player = { 
+        id: i, 
+        initialCards: [], 
+        initialCorps: [], 
+        currentCards: [], 
+        currentCorp: [], 
+        draftableCards: [], 
+        dongs: 0, 
+        dongduction: 0, 
+        steel: 0, 
+        steelProduction: 0, 
+        titanium: 0, 
+        titaniumProduction: 0, 
+        plants: 0, 
+        plantProduction: 0, 
+        energy: 0, 
+        energyProduction: 0, 
+        heat: 0, 
+        heatProduction: 0,
+        confirmed: false
+      };
       for (var cards = 0; cards < 10; cards++) {
         const card = deck.cards.pop();
         player.initialCards.push(card);
@@ -49,7 +71,9 @@ class App extends React.Component {
       corporationCards: corporationCards,
       deck: deck,
       currentView: 'board',
-      hexes: this.generateBoard()
+      hexes: this.generateBoard(),
+      phobos: '',
+      ganymede: ''
     };
   }
 
@@ -223,7 +247,7 @@ class App extends React.Component {
   render () {
     return (
         <div className="app-holder">
-          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]}/> : <BoardView players={this.state.players} hexes={this.state.hexes}/> }
+          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]}/> : <BoardView players={this.state.players} hexes={this.state.hexes} phobos={this.state.phobos} ganymede={this.state.ganymede}/> }
         </div>
     );
   }

@@ -43,9 +43,6 @@ class HandCard extends React.Component {
     const oneTimeEffect = this.state.card.text.one_time_effect.length > 0 ? <div>{this.state.card.text.one_time_effect}</div> : null;
     const action = this.state.card.text.action_or_effect.length > 0 ? <div>{this.state.card.text.action_or_effect}</div> : null;
     const cardClass = "name " + this.state.card.type.toLowerCase();
-    const image = "" + Math.floor(Math.random() * Math.floor(22)) + ".jpg";
-    console.log(image);
-    // const image = eval("im" + Math.floor(Math.random() * Math.floor(22)));
     return (
         <div className="card">
           <div className="hand-grid">
@@ -53,7 +50,7 @@ class HandCard extends React.Component {
             <div className="tags"><div className="hand-card-req">{this.state.card.req}</div>{tags}</div>
             <div className={cardClass}>{this.state.card.name}</div>
             <div className="effects">
-              <div className="art"><img className="art-image" src={require('./' + image)}></img></div>
+              <div className="art"><img className="art-image" src={this.state.card.src}></img></div>
               <div className="actual-effects">{productionBox}{oneTimeEffect}{action}</div>
               <div className="vp_holder">
                 <div className="vp_description"></div>
