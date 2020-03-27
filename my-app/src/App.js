@@ -244,10 +244,26 @@ class App extends React.Component {
     document.removeEventListener("keydown", this.keyPress);
   }
 
+  handChangedHandler(hand) {
+    console.log(hand);
+    // 1. Make a shallow copy of the items
+    let players = [...this.state.players];
+    // 2. Make a shallow copy of the item you want to mutate
+    let player = {...players[0]};
+    // 3. Replace the property you're intested in
+    player.draftableCards = [...hand.draftableCards];
+    player.currentCards = [...hand.currentCards];
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    console.log(player);
+    players[0] = player;
+    // 5. Set the state to our new copy
+    this.setState({players});
+  }
+
   render () {
     return (
         <div className="app-holder">
-          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]}/> : <BoardView players={this.state.players} hexes={this.state.hexes} phobos={this.state.phobos} ganymede={this.state.ganymede}/> }
+          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]} handChanged={this.handChangedHandler.bind(this)}/> : <BoardView players={this.state.players} hexes={this.state.hexes} phobos={this.state.phobos} ganymede={this.state.ganymede}/> }
         </div>
     );
   }
