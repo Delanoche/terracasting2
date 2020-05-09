@@ -6,6 +6,7 @@ import PlacementBonuses from './PlacementBonuses.js'
 import PlacementBonuses2 from './PlacementBonuses2.js'
 import BoardView from "./BoardView.js"
 import Cards from "./Cards";
+import HexUtils from 'react-hexgrid/lib/HexUtils';
 
 class App extends React.Component {
 
@@ -179,7 +180,8 @@ class App extends React.Component {
         oceanable: false,
         city: '',
         greenery: '',
-        marker: ''
+        marker: '',
+        text: ''
       };
       hexes.push(hex);
     }
@@ -207,7 +209,58 @@ class App extends React.Component {
       }
     }
     const bonuses = new PlacementBonuses2(hexes, hexesByPosition);
+    this.placeNoctis(hexes, hexesByPosition);
+    this.placeMons(hexes, hexesByPosition)
     return hexes;
+  }
+
+  placeNoctis(hexes, hexesByPosition) {
+    var viable = false;
+    var chosen = null;
+    var hex = null;
+    while(!viable) {
+      hex = hexes[this.getRandomInt(61)];
+      var ocean = false;
+      var neighbors = this.getNeighbors(hex.positions, hexesByPosition);
+      for (var i = 0; i < neighbors.length; i++) {
+        if (neighbors[i].oceanable) {
+          ocean = true;
+        }
+      }
+      if (!hex.oceanable && ocean && hex.placement.length === 0) {
+        viable = true;
+        chosen = hex;
+      }
+    }
+    hex.text = 'Noctis';
+  }
+
+  placeMons(hexes, hexesByPosition) {
+    const distance = 3;
+    var positions = [];
+    while(positions.length < 4) {
+      var hex = hexes[this.getRandomInt(61)];
+      var minDistance = 100;
+      for (var i = 0; i < positions.length; i++) {
+        var currentDistance = this.distanceFrom(positions[i], hex);
+        console.log('distance: ' + currentDistance);
+        if (currentDistance < minDistance) {
+          minDistance = currentDistance;
+        }
+      }
+      if (!hex.oceanable && minDistance >= distance && hex.text.length === 0 && hex.placement.length < 2) {
+        positions.push(hex);
+        hex.text = 'Tholus';
+      }
+    }
+  }
+
+  distanceFrom(existing, hex) {
+    var dx = Math.abs(existing.positions[0] - hex.positions[0]);
+    var dy = Math.abs(existing.positions[1] - hex.positions[1]);
+    var dz = Math.abs(existing.positions[2] - hex.positions[2]);
+
+    return (dx + dy + dz) / 2;
   }
 
   componentDidMount(){

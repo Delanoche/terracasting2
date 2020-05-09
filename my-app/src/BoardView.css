@@ -147,3 +147,7 @@ foreignObject {
     left: -10px;
 }
 
+.label-text {
+  font-size: 3px;
+  opacity: 0.8;
+}
