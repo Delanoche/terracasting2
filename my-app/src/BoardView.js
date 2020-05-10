@@ -52,15 +52,20 @@ class BoardView extends React.Component {
   }
 
   render () {
-    const hexBoard = this.state.hexes.map((hex) =>
-        <Hexagon className={hex.oceanable ? "ocean" : ""} q={hex.positions[0]} r={hex.positions[1]} s={hex.positions[2]} onClick={() => this.placeCity(hex)}>
+    const hexBoard = this.state.hexes.map((hex) => {
+        var c = hex.oceanable ? "ocean" : "";
+        if (hex.text === 'Noctis') {
+          c = 'noctis'
+        }
+
+        return <Hexagon className={c} q={hex.positions[0]} r={hex.positions[1]} s={hex.positions[2]} onClick={() => this.placeCity(hex)}>
           { hex.text.length > 0 ? <Text className="label-text">{hex.text}</Text> : null }
           <Placements bonuses={hex.placement}/>
           { hex.city.length > 0 ? <City player={hex.city} /> : null }
           { hex.greenery.length > 0 ? <Greenery player={hex.greenery} /> : null }
 
         </Hexagon>
-    );
+    });
 
     const players = this.state.players.map((player) =>
         <Player player={player} />
