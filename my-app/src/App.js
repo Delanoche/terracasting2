@@ -227,7 +227,7 @@ class App extends React.Component {
           ocean = true;
         }
       }
-      if (!hex.oceanable && ocean && hex.placement.length === 0) {
+      if (!hex.oceanable && ocean && hex.placement.length === 0 && !this.touchingEdge(hex)) {
         viable = true;
         chosen = hex;
       }
@@ -235,23 +235,29 @@ class App extends React.Component {
     hex.text = 'Noctis';
   }
 
+  touchingEdge(hex) {
+    return Math.abs(hex.positions[0]) >= 4 || Math.abs(hex.positions[1] >= 4) || Math.abs(hex.positions[2] >= 4);
+  }
+
   placeMons(hexes, hexesByPosition) {
-    const distance = 3;
+    const distance = 2;
     var positions = [];
+    var numChecked = 0;
     while(positions.length < 4) {
       var hex = hexes[this.getRandomInt(61)];
       var minDistance = 100;
       for (var i = 0; i < positions.length; i++) {
         var currentDistance = this.distanceFrom(positions[i], hex);
-        console.log('distance: ' + currentDistance);
         if (currentDistance < minDistance) {
           minDistance = currentDistance;
         }
       }
-      if (!hex.oceanable && minDistance >= distance && hex.text.length === 0 && hex.placement.length < 2) {
+      if (!hex.oceanable && (((minDistance <= distance || positions.length < 3) && hex.text.length === 0) || numChecked > 200)) {
+        numChecked = 0;
         positions.push(hex);
         hex.text = 'Tholus';
       }
+      numChecked++;
     }
   }
 
