@@ -6,6 +6,7 @@ import PlacementBonuses from './PlacementBonuses.js'
 import PlacementBonuses2 from './PlacementBonuses2.js'
 import BoardView from "./BoardView.js"
 import Cards from "./Cards";
+import ConfigView from "./ConfigView.js";
 import HexUtils from 'react-hexgrid/lib/HexUtils';
 
 class App extends React.Component {
@@ -42,13 +43,49 @@ class App extends React.Component {
 
     console.log(players);
 
+    var config = {
+      oceanPlots: this.getRandomInt(4) + 2,
+      maxOceanAdjacency: 3,
+      maxTotal: 65,
+      minTotal: 55,
+      maxTiles: 50,
+      minTiles: 40,
+      maxBonus: 3,
+      minPlant: 27,
+      maxPlant: 38,
+      minPlantTiles: 20,
+      maxPlantTiles: 27,
+      plantPlots: 1,
+      minTitanium: 4,
+      maxTitanium: 6,
+      minTitaniumTiles: 3,
+      maxTitaniumTiles: 5,
+      titaniumPlots: this.getRandomInt(4) + 2, // or 2
+      minSteel: 11,
+      maxSteel: 14,
+      minSteelTiles: 7,
+      maxSteelTiles: 9,
+      steelPlots: this.getRandomInt(4) + 3, // or 2
+      minHeat: 0,
+      maxHeat: 11,
+      minHeatTiles: 0,
+      maxHeatTiles: 5,
+      heatPlots: 2,
+      minCards: 5,
+      maxCards: 8,
+      minCardTiles: 5,
+      maxCardTiles: 6,
+      cardPlots: this.getRandomInt(4) + 2
+    };
+
     this.state = {
       players: players,
       projectCards: projectCards,
       corporationCards: corporationCards,
       deck: deck,
       currentView: 'board',
-      hexes: this.generateBoard()
+      hexes: this.generateBoard(false, config),
+      config: config
     };
   }
 
@@ -63,11 +100,17 @@ class App extends React.Component {
       }
     } else if (e.code ==='KeyG') {
       this.setState(prevState => ({
-        hexes: [...this.generateBoard()]
+        hexes: [...this.generateBoard(false, this.state.config)]
       }));
       // this.setState({
       //   hexes: this.state.hexes.splice(0, this.state.hexes.length, ...this.generateBoard())
       // });
+    } else if (e.code === 'KeyC') {
+      if (this.state.currentView === 'board') {
+        this.setState({ currentView: 'config' });
+      } else {
+        this.setState({ currentView: 'board' });
+      }
     }
   }
 
@@ -79,7 +122,7 @@ class App extends React.Component {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  shouldReRollOcean(oceanables, hexes, proposed) {
+  shouldReRollOcean(oceanables, hexes, proposed, config) {
     // return false;
     if (oceanables.length < this.numOceanPlots) {
       return false;
@@ -102,7 +145,7 @@ class App extends React.Component {
             numOceans++;
           }
         }
-        if (numOceans + 1 > 3) {
+        if (numOceans + 1 > config.maxOceanAdjacency) {
           wouldHaveTooManyOceans = true;
         }
       }
@@ -163,11 +206,11 @@ class App extends React.Component {
     }
   }
 
-  generateBoard(regenerate) {
+  generateBoard(regenerate, config) {
     var oceansToPlace = 12;
     const oceanables = [];
     var potentialOceans = [];
-    this.numOceanPlots = this.getRandomInt(4) + 2; // 2 to 5
+    this.numOceanPlots = config.oceanPlots; // 2 to 5
     for (var i = 0; i < 61; i++) {
       potentialOceans[i] = i;
     }
@@ -195,11 +238,11 @@ class App extends React.Component {
       var num = this.getRandomInt(61);
       var needsToFindSpot = true;
       while(needsToFindSpot) {
-        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) && !oceanables.includes(num)) {
+        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions, config) && !oceanables.includes(num)) {
           // console.log('found one at ' + num);
         }
         // console.log('should reroll ' + this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) + ' includes? ' + oceanables.includes(num) + ' ' + num);
-        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions) && !oceanables.includes(num)) {
+        if (!this.shouldReRollOcean(oceanables, hexesByPosition, hexes[num].positions, config) && !oceanables.includes(num)) {
           hexes[num].oceanable = true;
           oceanables.push(num);
           needsToFindSpot = false;
@@ -208,7 +251,7 @@ class App extends React.Component {
         num = this.getRandomInt(61);
       }
     }
-    const bonuses = new PlacementBonuses2(hexes, hexesByPosition);
+    const bonuses = new PlacementBonuses2(hexes, hexesByPosition, config);
     this.placeNoctis(hexes, hexesByPosition);
     this.placeMons(hexes, hexesByPosition)
     return hexes;
@@ -277,10 +320,15 @@ class App extends React.Component {
     document.removeEventListener("keydown", this.keyPress);
   }
 
+  configChangedHandler(config) {
+    console.log(config);
+    this.setState({ config: config })
+  }
+
   render () {
     return (
         <div className="app-holder">
-          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]}/> : <BoardView players={this.state.players} hexes={this.state.hexes}/> }
+          {this.state.currentView === 'hand' ? <HandView player={this.state.players[0]}/> : this.state.currentView === 'config' ? <ConfigView config={this.state.config} configChanged={this.configChangedHandler.bind(this)}/> : <BoardView players={this.state.players} hexes={this.state.hexes}/> }
         </div>
     );
   }

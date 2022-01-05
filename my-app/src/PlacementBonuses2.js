@@ -2,71 +2,42 @@ class PlacementBonuses2 {
 
   constructor(tiles,
               hexesByPosition,
-              maxTotal = 65,
-              minTotal = 55,
-              maxTiles = 50,
-              minTiles = 40,
-              maxBonus = 3,
-              minPlant = 27,
-              maxPlant = 38,
-              minPlantTiles = 20,
-              maxPlantTiles = 27,
-              plantPlots = 1,
-              minTitanium = 4,
-              maxTitanium = 6,
-              minTitaniumTiles = 3,
-              maxTitaniumTiles = 5,
-              titaniumPlots = this.getRandomInt(4) + 2, // or 2
-              minSteel = 11,
-              maxSteel = 14,
-              minSteelTiles = 7,
-              maxSteelTiles = 9,
-              steelPlots = this.getRandomInt(4) + 3, // or 2
-              minHeat = 0,
-              maxHeat = 11,
-              minHeatTiles = 0,
-              maxHeatTiles = 5,
-              heatPlots = 2,
-              minCards = 5,
-              maxCards = 8,
-              minCardTiles = 5,
-              maxCardTiles = 6,
-              cardPlots = this.getRandomInt(4) + 2) {
+              config) {
 
-    this.maxTotal = maxTotal;
-    this.minTotal = minTotal;
-    this.minTiles = minTiles;
-    this.maxBonus = maxBonus;
+    this.maxTotal = config.maxTotal;
+    this.minTotal = config.minTotal;
+    this.minTiles = config.minTiles;
+    this.maxBonus = config.maxBonus;
 
-    this.minPlant = minPlant;
-    this.maxPlant = maxPlant;
-    this.maxPlantTiles = maxPlantTiles;
-    this.minPlantTiles = minPlantTiles;
-    this.plantPlots = plantPlots;
+    this.minPlant = config.minPlant;
+    this.maxPlant = config.maxPlant;
+    this.maxPlantTiles = config.maxPlantTiles;
+    this.minPlantTiles = config.minPlantTiles;
+    this.plantPlots = config.plantPlots;
 
-    this.minTitanium = minTitanium;
-    this.maxTitanium = maxTitanium;
-    this.minTitaniumTiles = minTitaniumTiles;
-    this.maxTitaniumTiles = maxTitaniumTiles;
-    this.titaniumPlots = titaniumPlots;
+    this.minTitanium = config.minTitanium;
+    this.maxTitanium = config.maxTitanium;
+    this.minTitaniumTiles = config.minTitaniumTiles;
+    this.maxTitaniumTiles = config.maxTitaniumTiles;
+    this.titaniumPlots = config.titaniumPlots;
 
-    this.minSteel = minSteel;
-    this.maxSteel = maxSteel;
-    this.minSteelTiles = minSteelTiles;
-    this.maxSteelTiles = maxSteelTiles;
-    this.steelPlots = steelPlots;
+    this.minSteel = config.minSteel;
+    this.maxSteel = config.maxSteel;
+    this.minSteelTiles = config.minSteelTiles;
+    this.maxSteelTiles = config.maxSteelTiles;
+    this.steelPlots = config.steelPlots;
 
-    this.minHeat = minHeat;
-    this.maxHeat = maxHeat;
-    this.minHeatTiles = minHeatTiles;
-    this.maxHeatTiles = maxHeatTiles;
-    this.heatPlots = heatPlots;
+    this.minHeat = config.minHeat;
+    this.maxHeat = config.maxHeat;
+    this.minHeatTiles = config.minHeatTiles;
+    this.maxHeatTiles = config.maxHeatTiles;
+    this.heatPlots = config.heatPlots;
 
-    this.minCards = minCards;
-    this.maxCards = maxCards;
-    this.minCardTiles = minCardTiles;
-    this.maxCardTiles = maxCardTiles;
-    this.cardPlots = cardPlots;
+    this.minCards = config.minCards;
+    this.maxCards = config.maxCards;
+    this.minCardTiles = config.minCardTiles;
+    this.maxCardTiles = config.maxCardTiles;
+    this.cardPlots = config.cardPlots;
 
     this.currentPlant = 0;
     this.currentPlantTiles = 0;
@@ -109,8 +80,8 @@ class PlacementBonuses2 {
     this.numSteel = this.getRandomInt(1 + this.maxSteel - this.minSteel) + this.minSteel;
     this.numSteelTiles = this.getRandomInt(1 + this.maxSteelTiles - this.minSteelTiles) + this.minSteelTiles;
     this.numTitanium = this.getRandomInt(1 + this.maxTitanium - this.minTitanium) + this.minTitanium;
-    // this.numTitaniumTiles = this.getRandomInt(1 + this.maxTitaniumTiles - this.minTitaniumTiles) + this.minTitaniumTiles;
-    this.numTitaniumTiles = this.numTitanium - 1;
+    this.numTitaniumTiles = this.getRandomInt(1 + this.maxTitaniumTiles - this.minTitaniumTiles) + this.minTitaniumTiles;
+    // this.numTitaniumTiles = this.numTitanium - 1;
     this.numCards = this.getRandomInt(1 + this.maxCards - this.minCards) + this.minCards;
     this.numCardsTiles = this.getRandomInt(1 + this.maxCardTiles - this.minCardTiles) + this.minCardTiles;
     this.numPlants = this.getRandomInt(1 + this.maxPlant - this.minPlant) + this.minPlant;
